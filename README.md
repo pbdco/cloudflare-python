@@ -4,7 +4,7 @@ A simple CLI tool to manage Cloudflare DNS records.
 Supports creating and deleting
 
 v0.1:
-- [x[ Type [A] records
+- [x] Type [A] records
 - [ ] Type [CNAME] records
 - [ ] Proxy configurable 
 
