@@ -6,6 +6,7 @@ import os
 
 # Get Cloudflare API token from environment variable
 API_TOKEN = os.getenv("CLOUDFLARE_API_TOKEN")
+print(f"Debug - CLOUDFLARE_API_TOKEN: {API_TOKEN}", file=sys.stderr)
 if not API_TOKEN:
     print("Error: CLOUDFLARE_API_TOKEN environment variable is not set")
     sys.exit(1)
