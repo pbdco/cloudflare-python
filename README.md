@@ -5,6 +5,8 @@ Supports creating and deleting
 
 v0.1:
 - [x] Type [A] records
+      
+Pending:
 - [ ] Type [CNAME] records
 - [ ] Proxy configurable 
 
