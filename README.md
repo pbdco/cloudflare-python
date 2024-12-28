@@ -36,7 +36,7 @@ export CLOUDFLARE_API_TOKEN='your-token-here'
 
 ### Create DNS Record
 ```bash
-./cloudflare.py create -s subdomain -d example.com -i 192.168.1.1
+./cloudflare.py create -s subdomain -d example.com -i 12.34.12.34
 ```
 
 ### Delete DNS Record
@@ -52,40 +52,6 @@ export CLOUDFLARE_API_TOKEN='your-token-here'
 
 ## Alfred Workflow
 
-This script can be used as an Alfred workflow to quickly manage DNS records.
+This script is used in an Alfred workflow to quickly manage DNS records.
 
-### Workflow Setup
-1. Download the `.alfredworkflow` file from Releases
-2. Double click to import into Alfred
-3. Set your `CLOUDFLARE_API_TOKEN` in the workflow environment variables
-
-### Workflow Usage
-```bash
-dns create mysubdomain example.com 192.168.1.1
-dns delete mysubdomain example.com
-```
-
-## Development
-
-### Project Structure
-```
-.
-├── cloudflare.py          # Main script (with requests)
-├── portable/
-│   └── cloudflare_portable.py  # Standalone version
-├── requirements.txt
-└── workflow/              # Alfred workflow files
-    ├── info.plist
-    └── run.sh
-```
-
-### Contributing
-1. Fork the repository
-2. Create your feature branch
-3. Commit your changes
-4. Push to the branch
-5. Create a Pull Request
-
-## License
-
-MIT License - see LICENSE file for details
+https://github.com/pbdco/cloudflare-alfredworkflow
