@@ -43,7 +43,7 @@ def get_zone_id(domain, verbose=False):
 
     return None
 
-def create_dns_record(subdomain, domain, ip="127.0.0.1", verbose=False):
+def create_dns_record(subdomain, domain, ip="127.0.0.1", proxy=False, verbose=False):
     """Create a DNS A record for the given subdomain."""
     zone_id = get_zone_id(domain, verbose)
     if not zone_id:
@@ -54,14 +54,14 @@ def create_dns_record(subdomain, domain, ip="127.0.0.1", verbose=False):
         "name": f"{subdomain}.{domain}",
         "content": ip,
         "ttl": 1,
-        "proxied": False
+        "proxied": proxy
     }
 
     response = requests.post(f"{BASE_URL}/zones/{zone_id}/dns_records", headers=HEADERS, json=record_data)
     response_data = response.json()
 
     if response.status_code == 200 and response_data["success"]:
-        print(f"DNS record created: {subdomain}.{domain} -> {ip}")
+        print(f"DNS record created: {subdomain}.{domain} -> {ip} (proxy: {'enabled' if proxy else 'disabled'})")
     else:
         error_msg = response_data.get("errors", [{}])[0].get("message", "Unknown error")
         print_error(f"Failed to create DNS record: {error_msg}", response_data, verbose)
@@ -100,12 +100,13 @@ def main():
     parser.add_argument("-s", "--subdomain", required=True, help="Subdomain to create or delete.")
     parser.add_argument("-d", "--domain", required=True, help="Parent domain.")
     parser.add_argument("-i", "--ip", default="127.0.0.1", help="IP address for the A record (only for create action).")
+    parser.add_argument("-p", "--proxy", action="store_true", help="Enable Cloudflare proxy (only for create action).")
     parser.add_argument("-v", "--verbose", action="store_true", help="Show detailed error messages and API responses.")
 
     args = parser.parse_args()
 
     if args.action == "create":
-        create_dns_record(args.subdomain, args.domain, args.ip, args.verbose)
+        create_dns_record(args.subdomain, args.domain, args.ip, args.proxy, args.verbose)
     elif args.action == "delete":
         delete_dns_record(args.subdomain, args.domain, args.verbose)
 
