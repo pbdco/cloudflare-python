@@ -10,48 +10,53 @@ Current (v0.1):
 - [x] CNAME record support
 - [x] Configurable proxy settings
 - [x] Alfred Workflow integration
-- [x] Single-file bundled executable
-
-Planned:
-- [ ] List existing DNS records
-- [ ] Update existing records
 
 ## Prerequisites
 
-For using the bundled executable:
-- No Python installation required
+- Python 3.9+
 - Cloudflare API Token with DNS edit permissions
-
-For development:
-- Python 3.6+
 - pip (Python package installer)
 
 ## Installation
 
-### Option 1: Bundled Executable (Recommended)
-1. Download the latest bundled executable from the [Releases](https://github.com/yourusername/cloudflare-python/releases) page
-2. Make it executable:
-```bash
-chmod +x dist/cloudflare
-```
-
-### Option 2: Virtual Environment (Development)
+### Option 1: Direct Use
 1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/cloudflare-python.git
+git clone https://github.com/pbdco/cloudflare-python.git
 cd cloudflare-python
 ```
 
-2. Create and activate virtual environment:
-```bash
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-```
-
-3. Install dependencies:
+2. Install dependencies:
 ```bash
 pip install -r requirements.txt
 ```
+
+### Option 2: Build Executable (Testing)
+1. Clone the repository:
+```bash
+git clone https://github.com/pbdco/cloudflare-python.git
+cd cloudflare-python
+```
+
+2. Install PyInstaller and dependencies:
+```bash
+pip install pyinstaller
+pip install -r requirements.txt
+```
+
+3. Build the executable:
+```bash
+pyinstaller --onefile cloudflare.py
+```
+
+4. The executable will be created in the `dist` directory. Test it:
+```bash
+./dist/cloudflare create -s subdomain -d example.com -v 12.34.12.34
+```
+
+### Option 3: Alfred Workflow
+Download the latest Alfred workflow from:
+- [Cloudflare Alfred Workflow Repository](https://github.com/pbdco/cloudflare-alfredworkflow)
 
 ## Configuration
 
@@ -70,38 +75,38 @@ set CLOUDFLARE_API_TOKEN=your-token-here
 ### Create DNS Record
 Create an A record for a subdomain:
 ```bash
-./dist/cloudflare create -s subdomain -d example.com -i 12.34.12.34
+python cloudflare.py create -s subdomain -d example.com -v 12.34.12.34
+```
+
+Create a CNAME record:
+```bash
+python cloudflare.py create -s subdomain -d example.com -t CNAME -v target.example.com
+```
+
+Create a proxied record (orange cloud in Cloudflare):
+```bash
+python cloudflare.py create -s subdomain -d example.com -v 12.34.12.34 -p
 ```
 
 ### Delete DNS Record
 Remove a DNS record for a subdomain:
 ```bash
-./dist/cloudflare delete -s subdomain -d example.com
+python cloudflare.py delete -s subdomain -d example.com
 ```
 
 ### Command Line Options
 - `-s, --subdomain`: Subdomain to create/delete (required)
 - `-d, --domain`: Main domain (required)
-- `-i, --ip`: IP address (required for create action)
-- `-v, --verbose`: Show detailed API responses
-- `-h, --help`: Show help message
+- `-t, --type`: Record type (A or CNAME, defaults to A)
+- `-v, --value`: IP address or CNAME target (required for create)
+- `-p, --proxy`: Enable Cloudflare proxy (optional)
+- `--verbose`: Show detailed API responses
 
 ## Alfred Workflow Integration
 
-This script powers a custom Alfred workflow for quick DNS management. The workflow uses the bundled executable version for simplified deployment.
+This script powers a custom Alfred workflow for quick DNS management. For more information and installation instructions, visit:
 
 [Cloudflare Alfred Workflow Repository](https://github.com/pbdco/cloudflare-alfredworkflow)
-
-## Building from Source
-
-The bundled executable is automatically created by GitHub Actions on each release. If you want to build it manually:
-
-```bash
-pip install pyinstaller
-pyinstaller --onefile cloudflare.py
-```
-
-The executable will be created in the `dist` directory.
 
 ## Contributing
 
