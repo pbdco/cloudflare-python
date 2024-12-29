@@ -43,16 +43,31 @@ def get_zone_id(domain, verbose=False):
 
     return None
 
-def create_dns_record(subdomain, domain, ip="127.0.0.1", proxy=False, verbose=False):
-    """Create a DNS A record for the given subdomain."""
+def create_dns_record(subdomain, domain, value, record_type="A", proxy=False, verbose=False):
+    """Create a DNS record for the given subdomain.
+    
+    Args:
+        subdomain: The subdomain to create
+        domain: The parent domain
+        value: The value for the record (IP for A records, target for CNAME)
+        record_type: The type of DNS record (A or CNAME)
+        proxy: Whether to enable Cloudflare proxy
+        verbose: Whether to show detailed error messages
+    """
     zone_id = get_zone_id(domain, verbose)
     if not zone_id:
         return
 
+    # Validate record type
+    record_type = record_type.upper()
+    if record_type not in ["A", "CNAME"]:
+        print_error(f"Unsupported record type: {record_type}")
+        return
+
     record_data = {
-        "type": "A",
+        "type": record_type,
         "name": f"{subdomain}.{domain}",
-        "content": ip,
+        "content": value,
         "ttl": 1,
         "proxied": proxy
     }
@@ -61,10 +76,10 @@ def create_dns_record(subdomain, domain, ip="127.0.0.1", proxy=False, verbose=Fa
     response_data = response.json()
 
     if response.status_code == 200 and response_data["success"]:
-        print(f"DNS record created: {subdomain}.{domain} -> {ip} (proxy: {'enabled' if proxy else 'disabled'})")
+        print(f"{record_type} record created: {subdomain}.{domain} -> {value} (proxy: {'enabled' if proxy else 'disabled'})")
     else:
         error_msg = response_data.get("errors", [{}])[0].get("message", "Unknown error")
-        print_error(f"Failed to create DNS record: {error_msg}", response_data, verbose)
+        print_error(f"Failed to create {record_type} record: {error_msg}", response_data, verbose)
 
 def delete_dns_record(subdomain, domain, verbose=False):
     """Delete a DNS record for the given subdomain."""
@@ -99,14 +114,15 @@ def main():
     parser.add_argument("action", choices=["create", "delete"], help="Action to perform: create or delete.")
     parser.add_argument("-s", "--subdomain", required=True, help="Subdomain to create or delete.")
     parser.add_argument("-d", "--domain", required=True, help="Parent domain.")
-    parser.add_argument("-i", "--ip", default="127.0.0.1", help="IP address for the A record (only for create action).")
-    parser.add_argument("-p", "--proxy", action="store_true", help="Enable Cloudflare proxy (only for create action).")
-    parser.add_argument("-v", "--verbose", action="store_true", help="Show detailed error messages and API responses.")
+    parser.add_argument("-t", "--type", default="A", choices=["A", "CNAME"], help="DNS record type (default: A).")
+    parser.add_argument("-v", "--value", required=True, help="Record value (IP for A records, target for CNAME records).")
+    parser.add_argument("-p", "--proxy", action="store_true", help="Enable Cloudflare proxy.")
+    parser.add_argument("--verbose", action="store_true", help="Show detailed error messages and API responses.")
 
     args = parser.parse_args()
 
     if args.action == "create":
-        create_dns_record(args.subdomain, args.domain, args.ip, args.proxy, args.verbose)
+        create_dns_record(args.subdomain, args.domain, args.value, args.type, args.proxy, args.verbose)
     elif args.action == "delete":
         delete_dns_record(args.subdomain, args.domain, args.verbose)
 
