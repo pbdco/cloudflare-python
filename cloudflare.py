@@ -115,13 +115,15 @@ def main():
     parser.add_argument("-s", "--subdomain", required=True, help="Subdomain to create or delete.")
     parser.add_argument("-d", "--domain", required=True, help="Parent domain.")
     parser.add_argument("-t", "--type", default="A", choices=["A", "CNAME"], help="DNS record type (default: A).")
-    parser.add_argument("-v", "--value", required=True, help="Record value (IP for A records, target for CNAME records).")
+    parser.add_argument("-v", "--value", help="Record value (IP for A records, target for CNAME records).")
     parser.add_argument("-p", "--proxy", action="store_true", help="Enable Cloudflare proxy.")
     parser.add_argument("--verbose", action="store_true", help="Show detailed error messages and API responses.")
 
     args = parser.parse_args()
 
     if args.action == "create":
+        if not args.value:
+            parser.error("the following arguments are required for create: -v/--value")
         create_dns_record(args.subdomain, args.domain, args.value, args.type, args.proxy, args.verbose)
     elif args.action == "delete":
         delete_dns_record(args.subdomain, args.domain, args.verbose)
