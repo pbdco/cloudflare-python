@@ -10,6 +10,7 @@ Current (v0.1):
 - [x] CNAME record support
 - [x] Configurable proxy settings
 - [x] Alfred Workflow integration
+- [x] Single-file bundled executable
 
 Planned:
 - [ ] List existing DNS records
@@ -17,20 +18,24 @@ Planned:
 
 ## Prerequisites
 
-- Python 3.6+
+For using the bundled executable:
+- No Python installation required
 - Cloudflare API Token with DNS edit permissions
+
+For development:
+- Python 3.6+
 - pip (Python package installer)
 
 ## Installation
 
-### Option 1: Direct Use (Portable Version)
-1. Download `cloudflare_portable.py`
+### Option 1: Bundled Executable (Recommended)
+1. Download the latest bundled executable from the [Releases](https://github.com/yourusername/cloudflare-python/releases) page
 2. Make it executable:
 ```bash
-chmod +x cloudflare_portable.py
+chmod +x dist/cloudflare
 ```
 
-### Option 2: Virtual Environment (Recommended)
+### Option 2: Virtual Environment (Development)
 1. Clone the repository:
 ```bash
 git clone https://github.com/yourusername/cloudflare-python.git
@@ -65,13 +70,13 @@ set CLOUDFLARE_API_TOKEN=your-token-here
 ### Create DNS Record
 Create an A record for a subdomain:
 ```bash
-./cloudflare.py create -s subdomain -d example.com -i 12.34.12.34
+./dist/cloudflare create -s subdomain -d example.com -i 12.34.12.34
 ```
 
 ### Delete DNS Record
 Remove a DNS record for a subdomain:
 ```bash
-./cloudflare.py delete -s subdomain -d example.com
+./dist/cloudflare delete -s subdomain -d example.com
 ```
 
 ### Command Line Options
@@ -83,9 +88,20 @@ Remove a DNS record for a subdomain:
 
 ## Alfred Workflow Integration
 
-This script powers a custom Alfred workflow for quick DNS management. For more information and installation instructions, visit:
+This script powers a custom Alfred workflow for quick DNS management. The workflow uses the bundled executable version for simplified deployment.
 
 [Cloudflare Alfred Workflow Repository](https://github.com/pbdco/cloudflare-alfredworkflow)
+
+## Building from Source
+
+The bundled executable is automatically created by GitHub Actions on each release. If you want to build it manually:
+
+```bash
+pip install pyinstaller
+pyinstaller --onefile cloudflare.py
+```
+
+The executable will be created in the `dist` directory.
 
 ## Contributing
 
